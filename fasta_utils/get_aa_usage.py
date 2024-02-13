@@ -36,4 +36,3 @@ counter = sorted(counter.items())
 
 print_totals(counter)
 print_percentage(counter)
-
