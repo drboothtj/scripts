@@ -15,7 +15,7 @@ def read_file(filename):
 	'''
 	read file with specified filename and return lines as list
 	'''
-	print('reading ', filename)
+	#print('reading ', filename)
 	with open(filename, 'r') as f:
 		lines =	f.read()
 	return lines
@@ -25,7 +25,7 @@ def get_sequence(filename, annotations):
 	searches a genbank file for a specific annotation or list of annotations
 	'''
 	records = read_file(filename)
-	print(filename)
+	#print(filename)
 	for record in SeqIO.parse(filename, 'genbank'):
 		for feature in record.features:
 			try:
