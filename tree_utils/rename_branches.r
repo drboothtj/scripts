@@ -8,7 +8,7 @@ library(ape)
 #get args
 args <- commandArgs(trailingOnly=TRUE)
 #cut_character <- as.character(args[1])
-cut_character <- "."
+#cut_character <- "_"
 
 #get files
 files <- list.files('.')
