@@ -55,7 +55,7 @@ def write_faa(sequences):
 			f.write(f">{sequence[0]}\n")
 			f.write(f"{sequence[2]}\n")
 
-def main(locus_file, target_files):
+def main(locus, target_files):
 	#get list of annotations from .txt
 	annotation_names = read_file(locus_file)
 
@@ -73,6 +73,7 @@ def main(locus_file, target_files):
 				sequence = get_sequence(filename, annotation_names)
 				sequences.append(sequence)
 				annotation_names.remove(sequence[0])
+        break
 			except:
 				pass
 
@@ -81,6 +82,6 @@ def main(locus_file, target_files):
 	write_fna(sequences)
 	write_faa(sequences)
 
-locus_file = argv[1]
+locus = argv[1]
 target_files = argv[2:]
-main(locus_file, target_files)
+main(locus, target_files)
