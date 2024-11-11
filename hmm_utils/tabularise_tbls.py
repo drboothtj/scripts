@@ -39,7 +39,8 @@ def get_data_from_tbl(tbl:str) -> List[str]:
     lines = tbl_file.readlines()
     for line in lines:
       if line[0] != '#':
-        cleaned_line = re.sub(' +', ',', line.strip()) + '\n'
+        cleaned_line = tbl + ','
+        cleaned_line += re.sub(' +', ',', line.strip()) + '\n'
         cleaned_lines.append(cleaned_line)
     return cleaned_lines
 
