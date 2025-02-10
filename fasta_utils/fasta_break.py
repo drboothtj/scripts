@@ -27,18 +27,27 @@ def read_file(filename):
         lines = [line for line in lines_to_read]
     return lines
 
+def main(filename: str) -> None:
+    '''
+    main routine for fasta break
+        arguments:
+            filename: path to fasta file to be split
+        returns:
+            None
+    '''
+    lines = read_file(filename)
+
+    joined = ''.join(lines)
+    unjoined = joined.split('>')
+    
+    for line in unjoined[1:]:
+        #print(line[0:100])
+        new_filename = line.split('\n')[0] + '.fasta'
+        name = '>' + line
+        print(len(name))
+        write_file([name], new_filename)
+
 filename = argv[1]
+main(filename)
 
-lines = read_file(filename)
-
-joined = ''.join(lines)
-unjoined = joined.split('>')
-
-for line in unjoined[1:]:
-    #print(line[0:100])
-    new_filename = line.split('\n')[0] + '.fasta'
-    name = '>' + line
-    new_lines = [name]
-    new_lines.append(line.split('\n')[1])
-    write_file(new_lines, new_filename)
 
