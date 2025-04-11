@@ -3,16 +3,9 @@ convert an mmseq tsv to fast files for each cluster
 '''
 
 from sys import argv
-from typing import List, Tuple, Set
+from typing import List, Tuple
 
-def get_representatives(pairs):
-    '''
-    get a list of reprisentative sequences
-    '''
-    reprisentatives = {pair[0] for pair in pairs}
-    return list(reprisentatives) #return the set as a list for faster iteration
-
-def remove_duplicates(pairs: List[Tuple]) -> Set[Tuple]:
+def remove_duplicates(pairs: List[Tuple]) -> List[Tuple]:
     '''
     remove identical pairs by converting a list of tuples to a set
         arguments:
@@ -40,23 +33,25 @@ def main(mmseq_path: str) -> None:
     '''
     main routine
         argument:
-            mmseq_path: path to a mmseq .tsv
+            mmseq_path: path to a mmseq.tsv
         returns:
             None
     '''
     pairs = read_two_column_tsv(mmseq_path)
     pairs = remove_duplicates(pairs)
-    representatives = get_representatives(pairs)
-    number_of_clusters = len(representatives)
-    cluster_sizes = []
-    #convert reps to dict.
+    clusters = {}
+    biggest_cluster = 1
+    biggest_name = 'ERROR'
     for pair in pairs:
-        members = [pair[1] for pair in pairs if pair[0]==rep] #reverse to loop over reps instead? #set inscetion between reps
-        cluster_sizes.append(len(members))
-    print(
-        f'there are {number_of_clusters} clusters'
-        f'ranging from {min(cluster_sizes)} to {max(cluster_sizes)}'
-    )
+        if pair[0] in clusters.keys():
+            clusters[pair[0]].append(pair[1])
+        else:
+            clusters[pair[0]] = [pair[1]]
+
+    biggest_name = max(clusters, key=lambda k: len(clusters[k]))
+    biggest_cluster = len(clusters[biggest_name])
+    print(f'The biggest cluster was {biggest_name} with a size of {biggest_cluster}.')
+    print(f'Its members are {clusters[biggest_name]}.')
 
 tsv_path = argv[1]
 main(tsv_path)
