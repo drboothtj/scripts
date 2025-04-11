@@ -2,8 +2,22 @@
 convert an mmseq tsv to fast files for each cluster
 '''
 
+from collections import defaultdict
 from sys import argv
 from typing import List, Tuple
+
+def write_list_to_txt(lines: List, filename: str) -> None:
+    '''
+    write a list to lines of a file
+        arguments:
+            lines: a list of lines to write
+            filename: path to write to
+        returns:
+            None
+    '''
+    with open(filename, 'w') as f:
+        for line in lines:
+            f.writelines(line + '\n')
 
 def remove_duplicates(pairs: List[Tuple]) -> List[Tuple]:
     '''
@@ -39,19 +53,19 @@ def main(mmseq_path: str) -> None:
     '''
     pairs = read_two_column_tsv(mmseq_path)
     pairs = remove_duplicates(pairs)
-    clusters = {}
+    clusters = defaultdict(list)
     biggest_cluster = 1
     biggest_name = 'ERROR'
     for pair in pairs:
-        if pair[0] in clusters.keys():
-            clusters[pair[0]].append(pair[1])
-        else:
-            clusters[pair[0]] = [pair[1]]
+        clusters[pair[0]].append(pair[1])
 
     biggest_name = max(clusters, key=lambda k: len(clusters[k]))
     biggest_cluster = len(clusters[biggest_name])
     print(f'The biggest cluster was {biggest_name} with a size of {biggest_cluster}.')
-    print(f'Its members are {clusters[biggest_name]}.')
+    for cluster in clusters:
+        if len(clusters[cluster]) > 100:
+            write_list_to_txt(clusters[cluster], cluster + '.txt')
+            
 
 tsv_path = argv[1]
 main(tsv_path)
