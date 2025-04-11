@@ -79,4 +79,3 @@ results = check_blastp_results(rid)
 hit_species = parse_results(results)
 genus_counter =(Counter([species.split()[0] for species in hit_species]))
 print(genus_counter.most_common(1)[0][0])
-
