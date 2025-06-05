@@ -27,7 +27,7 @@ def plot_strip_plot(headers, data):
     make a strip plot from data
     '''
     fig, ax = plt.subplots()
-
+    '''
     for i, category in enumerate(headers):
         #plot data by category
         values = data[i]
@@ -37,6 +37,20 @@ def plot_strip_plot(headers, data):
         #also calculate mean
         mean_value = np.mean(values)
         ax.scatter(i, mean_value, color='black', marker='x', s=100, linewidths=2, label='Mean')
+    '''
+    # Boxplot overlay — position is important
+    ax.boxplot(
+        [np.array(data[i], dtype=float) for i in range(len(headers))],
+        positions=range(len(headers)),
+        widths=0.3,
+        patch_artist=True,
+        boxprops=dict(facecolor='none', color='black'),
+        medianprops=dict(color='red'),
+        whiskerprops=dict(color='black'),
+        capprops=dict(color='black'),
+        flierprops=dict(marker='o', markersize=2, alpha=0.3)
+    )
+
 
     plt.xticks(range(len(headers)), headers)
     plt.xlabel('Category')
