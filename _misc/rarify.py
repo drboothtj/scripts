@@ -44,7 +44,6 @@ def compute_rarefaction(matrix, max_n=None, steps=None, reps=100):
   return new_x_vals, y_vals
 
 def plot_curve(x, y):
-  print(x,y)
   plt.plot(x, y, marker='o')
   plt.xlabel("Number of genomes sampled")
   plt.ylabel("Average number of unique genes")
