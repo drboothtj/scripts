@@ -42,7 +42,7 @@ def count_singletons(sample):
   unique_values = {x for x in counter if counter[x] == 1}
   return len(unique_values)
 
-def compute_rarefaction(matrix, max_n=None, steps=None, reps=100): #make argument when parser exists
+def compute_rarefaction(matrix, max_n=None, steps=10, reps=100): #make argument when parser exists
   if max_n is None:
     max_n = len(matrix)
   if steps is None:
@@ -65,16 +65,13 @@ def compute_rarefaction(matrix, max_n=None, steps=None, reps=100): #make argumen
 
 def plot_curve(x, y1, y2):
   fig, ax1 = plt.subplots(figsize=(8, 6))
-  ax1.plot(x, y1, marker='o', color='tab:blue', label="unique genes")
+  ax1.plot(x, y1, marker='o', linestyle='None', color='#1f77b4', label="unique genes")
   ax1.set_xlabel("Number of genomes sampled")
-  ax1.set_ylabel("unique genes", color='tab:blue')
-  ax1.tick_params(axis='y', labelcolor='tab:blue')
+  ax1.set_ylabel("unique genes")
 
-  if y2 is not None:
-      ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-      ax2.plot(x, y2, marker='o', color='tab:red', label="singletons")
-      ax2.set_ylabel("singletons", color='tab:red')
-      ax2.tick_params(axis='y', labelcolor='tab:red')
+  ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+  ax2.plot(x, y2, marker='o', linestyle='None', color ="#ff7f0e")
+  ax2.set_ylabel("singletons")
 
   plt.title("Rarefaction Curve")
   plt.grid(True)
