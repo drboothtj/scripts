@@ -2,8 +2,7 @@
 # Arguments:
 #   args[1]: path to the first tree
 #   args[2]: path to the second tree
-#   args[3]: [UNUSED] path to metadata table
-#   args[4]: path for output .svg
+#   args[3]: path to a list of ids to colour
 
 # install libraries
 #install.packages(c("phytools", "paco", "plotly", "viridis", "svglite"))
@@ -14,16 +13,18 @@ library(paco)
 library(plotly)
 library(viridis)
 library(svglite)
+library(colorspace)
 
 # get arguments
 args <- commandArgs(trailingOnly = TRUE)
 tree_1_path <- args[1]
 tree_2_path <- args[2]
-metadata_path <- args[3]
-output <- args[4]
+metadata_files <- if (length(args) >= 3) args[3:length(args)] else character(0)
 
-# read metadata table
-#data <- read.csv("/home/azureuser/datadrive/saccharopolyspora_dataset/data/processed/Staphylobactin_bigfam/tables/df_gtdb_meta.csv")
+# Get base names of the trees (removes directory)
+tree_1_base <- tools::file_path_sans_ext(basename(tree_1_path))
+tree_2_base <- tools::file_path_sans_ext(basename(tree_2_path))
+output <- paste0(tree_1_base, "_vs_", tree_2_base, ".svg")
 
 # preprocess genome tree
 tree_1 <- read.tree(tree_1_path)
@@ -39,55 +40,44 @@ tree_2 <- ladderize(reorder(tree_2))
 
 # build links, here it mapped the same genome_ids
 links <- cbind(tree_2$tip, tree_2$tip)
+red_cb <- rgb(213/255,94/255,0)
+link_colors <- rep(red_cb, nrow(links))
 obj <- cophylo(tree_1, tree_2, links, rotate = TRUE)
 
-# Create a unique color for each family category.
-#family_levels <- unique(data$Family)
-#colors <- rainbow(length(family_levels))
+##manage metadata files##
+# read groups into a list
+metadata_list <- lapply(metadata_files, function(f) scan(f, what=character(), quiet=TRUE))
 
-# Create a named vector of colors for each family.
-#family_colors <- setNames(colors, family_levels)
+#get colours
+green_cb <- rgb(0,158/255,115/255)
+yellow_cb <- rgb(240/255,228/255,66/255)
+for (i in seq_along(metadata_list)) {
+  ids <- metadata_list[[i]]
+  if (i == 1) {
+    link_colors[links[,1] %in% ids] <- green_cb
+  } else if (i == 2) {
+    link_colors[links[,1] %in% ids] <- yellow_cb
+  } 
+  # add more conditions if needed
+}
 
-# Assuming 'tree_bgc$tip.label' can be matched to 'data$tip_label' to find the genus.
-#tip_family1 <- data$Family[match(obj$trees[[1]]$tip.label, data$genome_id)]
-#tip_colors1 <- family_colors[tip_family1]
-
-# Assuming 'tree_bgc$tip.label' can be matched to 'data$tip_label' to find the genus.
-#tip_family2 <- data$Family[match(obj$trees[[2]]$tip.label, data$genome_id)]
-#tip_colors2 <- family_colors[tip_family2]
-
-# Assuming 'tree_bgc$tip.label' can be matched to 'data$tip_label' to find the genus.
-#link_family <- data$Family[match(links[,1], data$genome_id)]
-#link_colors <- family_colors[link_family]
-
-#pdf("tanglegram.pdf", width=16, height=24)
+# create svg
 svglite(output, width = 16, height = 16)
 # draw the cophylo
-plot.cophylo(obj, link.type="curved", link.lwd=2, link.lty="solid", fsize=c(0.1,0.1), pts=FALSE)
-             #,link.col = make.transparent(link_colors, 0.5))
+plot.cophylo(obj, link.type="curved", link.lwd=4, link.lty="solid", fsize=c(2.25,2.25), pts=FALSE, link.col = link_colors, edge.lwd=4)
 
 nodelabels.cophylo(obj$trees[[1]]$node.label[2:Nnode(obj$trees[[1]])],
   2:Nnode(obj$trees[[1]])+Ntip(obj$trees[[1]]),frame="none",
-  cex=0.5,adj=c(1,-0.4),which="left")
+  cex=2,adj=c(1,-0.4),which="left")
 
 nodelabels.cophylo(obj$trees[[2]]$node.label[2:Nnode(obj$trees[[2]])],
   2:Nnode(obj$trees[[2]])+Ntip(obj$trees[[2]]),frame="none",
-  cex=0.5,adj=c(0,1.4),which="right")
+  cex=2,adj=c(0,1.4),which="right")
 
 ## add tip labels
-tiplabels.cophylo(pch=21,frame="none", cex=1.5) #bg=tip_colors1,cex=1.5)
-tiplabels.cophylo(pch=21,frame="none", cex=1.5) #bg=tip_colors2,which="right",cex=1.5)
+tiplabels.cophylo(pch=NA,frame="none", cex=2) #bg=tip_colors1,cex=1.5)
+tiplabels.cophylo(pch=NA,frame="none", cex=2) #bg=tip_colors2,which="right",cex=1.5)
 
-# Use locator to interactively place the legend
-# Note: Remove this line if you're running the script non-interactively or if you're saving to PDF
-#position <- locator(1)  # Click on the plot where you want the legend to appear
-
-# Add a legend outside the plot area (to the right)
-#par(xpd=TRUE)  # Allow plotting outside the plot area
-#legend(x="bottomleft", inset=c(-0.0, 0),  # Adjust inset to move the legend to the left
-#       legend=names(family_colors), 
-#       fill=family_colors, 
-#       title="Family", 
-#       cex=0.7, 
-#       pt.cex=0.7, 
-#       text.width=0.2)
+all(links[,1] %in% tree_1$tip.label)
+all(links[,2] %in% tree_2$tip.label)
+cat("SVG written to", output, "\n")
