@@ -1,11 +1,10 @@
 '''
-NOT TESTED
 Take a glob of .bed files and produce a draft transcriptional network
     requires: networkx
     parameters:
         argv [1]: mapping file,
-            a two-column csv with filenames linked to the protein the reprisent
-            e.g. each row(protein1_assigned_genes.bed, Protein1)
+            a two-column csv (semi-colons) with filenames linked to the protein the reprisent
+            e.g. each row(protein1_assigned_genes.bed; Protein1)
             this is necissary because filenames from DAP-seq pipeline are often very complex
             just ensure the paths are correct and the protein names are EXACTLY as they appear
             in the 'locus_tag=' column of the .bed
@@ -54,6 +53,7 @@ def read_bed(filepath:str) -> List:
     '''
     locus_tags = []
     pattern = re.compile(r"locus_tag=([^;]+)")
+    filepath = filepath.lstrip('\ufeff').strip() #remove windows garbage
     with open(filepath, "r") as file:
         for line in file:
             match = pattern.search(line)
@@ -71,7 +71,7 @@ def generate_network(mapping: List[Tuple]) -> nx.DiGraph:
 
     '''
     network = nx.DiGraph()
-    for source_protein, filepath in mapping:
+    for filepath, source_protein in mapping:
         if source_protein not in network:
             network.add_node(source_protein, type='regulator')
         else:
@@ -92,7 +92,7 @@ def read_map(mapping_file: str) -> List[Tuple]:
     '''
     mapping_items = []
     with open(mapping_file, 'r', newline='') as file:
-        reader = csv.reader(file)
+        reader = csv.reader(file, delimiter =';')
         for row in reader:
             if len(row) == 2:  # ensure exactly two columns
                 mapping_items.append((row[0].strip(), row[1].strip()))
@@ -100,7 +100,7 @@ def read_map(mapping_file: str) -> List[Tuple]:
                 raise Exception(
                     'The mapping file is not formatted correctly. '
                     'Please ensure you have provided a .csv with two columns per row.'
-                    )
+                    f'See: "{row}".')
     return mapping_items
 
 def main(mapping_file: str):
