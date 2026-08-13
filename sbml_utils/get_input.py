@@ -38,4 +38,3 @@ def main(filepath: str) -> None:
 
 FILEPATH = argv[1]
 main(FILEPATH)
-
