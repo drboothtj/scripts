@@ -1,4 +1,5 @@
 '''
+WARNING: USE AUTOFAN2
 a script to automate the design of selfligation PCR for telomere characterisation in Streptomyces
 
 if you find this script helpful, please cite:
