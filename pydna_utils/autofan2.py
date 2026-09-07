@@ -2,6 +2,8 @@
 a script to automate the design of inverted PCR for telomere characterisation in Streptomyces
 version 2 uses primer3 for improved primer design
 
+Uage: python autofan2.py <path_to_genbank_file>
+
 if you find this script helpful, please cite:
     Faurdal D et al.,
     Tying up loose ends: Recovering thousands of missing telomeres from Streptomyces and 
@@ -17,7 +19,6 @@ for the origional protcol see:
     Algora-Gallardo L et al.,
     Bilateral symmetry of linear streptomycete chromosomes.
     Microb Genom. 2021
-
 
 Written by T.J.B.
 '''
@@ -90,7 +91,7 @@ def design_primers(template: Seq.Seq, name: str) -> None:
             )
     except  OSError:
         print(f"No good primers found for {name}")
-            
+
 def digest(record: SeqRecord) -> Tuple[Seq.Seq, Seq.Seq]:
     '''
     simulate digestion with blunt cutters
