@@ -94,7 +94,12 @@ def design_primers(template: Seq.Seq, name: str) -> None:
 
 def digest(record: SeqRecord) -> Tuple[Seq.Seq, Seq.Seq]:
     '''
-    simulate digestion with blunt cutters
+    simulate digestion of linear chromosomes with blunt cutters
+        arguments:
+            record: biopython SeqRecord of a linear replicon
+        returns:
+           left_fragment: left fragment of linear digest
+           right_fragment: right fragment of linear digest
     '''
     cutters = RestrictionBatch(["SmaI", "PvuII"])
     cuts = cutters.search(record.seq)
