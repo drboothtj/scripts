@@ -1,6 +1,9 @@
 '''
-a script to automatically generate an itol annotations file from a csv
-    argv[1]: input .csv - two colums, ID and value
+a script to automatically generate an itol annotations file from a .csv
+takes a csv with the first column as the ID
+additional columns will be used to create new annotations for  unique values PER COLUMN
+i.e. a three column .csv will generate an IToL annotation with two datasets
+    argv[1]: input .csv - colums, ID and value
 '''
 import csv
 
