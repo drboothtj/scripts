@@ -57,7 +57,7 @@ def get_dictionaries(lines: List[List]) -> List[Dict]:
         values_dicts.append(values_dict)
     return values_dicts
 
-def get_lines(values_dict: Dict, shape_id: int) -> List[str]:
+def get_lines(values_dict: Dict, iteration: int) -> List[str]:
     '''
     convert the values dictionary into itol readable strings, add the header and print the output
         arguments:
@@ -70,7 +70,7 @@ def get_lines(values_dict: Dict, shape_id: int) -> List[str]:
 
     for key, values in values_dict.items():
         lines = [
-            f"{value},{shape_id},50,{COLOURS[colour_id]},1,-1,{key}"
+            f"{value},{iteration},50,{COLOURS[colour_id]},1,-{iteration},{key}"
             for value in values
         ]
         final_lines.extend(lines)
@@ -95,7 +95,7 @@ def main(filename: str) -> None:
                 f"More values ({len(values)}) than colours ({len(COLOURS)})!"
                 "Please add more colours or reduce the number of unique values."
                             )
-        get_lines(values, x + 1) #no shape id of 0
+        get_lines(values, x + 1) #no shape id or pos of 0
 
 FILENAME = argv[1]
 main(FILENAME)
