@@ -74,7 +74,8 @@ def get_lines(values_dict: Dict, iteration: int) -> List[str]:
             for value in values
         ]
         final_lines.extend(lines)
-    output = "\n".join(HEADER + final_lines)
+        colour_id += 1
+    output = "\n".join(final_lines)
     print(output)
 
 def main(filename: str) -> None:
@@ -88,6 +89,7 @@ def main(filename: str) -> None:
     lines = read_csv(filename)
     values_dicts = get_dictionaries(lines)
 
+    print("\n".join(HEADER))
     for x, values in enumerate(values_dicts):
 
         if len(values) > len(COLOURS):
